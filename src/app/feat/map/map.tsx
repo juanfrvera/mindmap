@@ -6,7 +6,7 @@ import { iItem } from "../item/typings";
 import { IPosition } from "../position/position";
 
 export default function Map() {
-  const clickOnSvgCanvas = (ev: React.MouseEvent<SVGElement>) => {
+  const doubleClickOnCanvas = (ev: React.MouseEvent<HTMLElement>) => {
     addItem({ x: ev.clientX, y: ev.clientY });
   };
 
@@ -21,9 +21,9 @@ export default function Map() {
 
   return (
     <div className={styles.mapContainer}>
-      <svg onClick={clickOnSvgCanvas} className={styles.svgCanvas}>
+      <div onDoubleClick={doubleClickOnCanvas} className={styles.canvas}>
         {itemsUi}
-      </svg>
+      </div>
       <div className={styles.commandBarContainer}>
         <Command></Command>
       </div>
