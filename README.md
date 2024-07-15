@@ -1,4 +1,5 @@
-In NutriMap you can create a MindMap of all your nutri knowledge
+MindMap was created using React and NextJs.
+In this app you can move around a map, create notes and connect them
 
 Created with Node 20
 
