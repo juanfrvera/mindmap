@@ -15,9 +15,14 @@ export default function Map() {
     setItems([...items, newItem]);
   };
 
+  const setEditing = (id: string, editing: boolean) => {
+    const newItems = items.map((item) => ({ ...item, isEditing: item.id === id }));
+    setItems(newItems);
+  }
+
   const [items, setItems] = useState<iItem[]>([]);
 
-  const itemsUi = items.map((item) => <Item key={item.id} item={item}></Item>);
+  const itemsUi = items.map((item) => <Item key={item.id} item={item} setEditing={(value: boolean) => setEditing(item.id, value)}></Item>);
 
   return (
     <div className={styles.mapContainer}>
