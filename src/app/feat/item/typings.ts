@@ -8,8 +8,8 @@ export interface INode {
 
 export interface ILink {
   id: string;
+  fromPosition: IPosition;
+  toPosition: IPosition;
   fromNodeId?: string;
   toNodeId?: string;
-  fromPosition?: IPosition;
-  toPosition?: IPosition;
 }

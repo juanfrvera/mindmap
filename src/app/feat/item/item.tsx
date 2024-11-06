@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 export default function Item({
   node,
   setEditing,
-  onClickOnArrow,
+  onMouseDownOnArrow,
 }: {
   node: INode;
   setEditing: (editing: boolean) => void;
-  onClickOnArrow: (
+  onMouseDownOnArrow: (
     ev: React.MouseEvent<HTMLButtonElement>,
     node: INode
   ) => void;
@@ -32,8 +32,8 @@ export default function Item({
     ev.stopPropagation();
   };
 
-  const clickOnArrow = (ev: React.MouseEvent<HTMLButtonElement>) => {
-    onClickOnArrow(ev, node);
+  const mouseDownOnArrow = (ev: React.MouseEvent<HTMLButtonElement>) => {
+    onMouseDownOnArrow(ev, node);
   };
 
   return (
@@ -49,7 +49,7 @@ export default function Item({
         contentEditable={node.isEditing}
         autoFocus
       ></div>
-      {node.isEditing && <button onClick={clickOnArrow}>Arrow</button>}
+      {node.isEditing && <button onMouseDown={mouseDownOnArrow}>Arrow</button>}
     </div>
   );
 }

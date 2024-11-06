@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Command from "../command/command";
 import styles from "./map.module.scss";
 import Item from "../item/item";
@@ -8,7 +8,42 @@ import { IPosition } from "../position/position";
 export default function Map() {
   const [nodes, setNodes] = useState<INode[]>([]);
   const [editedNode, setEditedNode] = useState<INode>();
-  const [movingLink, setMovingLink] = useState<ILink>();
+  const [movingLinkId, setMovingLinkId] = useState<string>();
+  const [links, setLinks] = useState<ILink[]>([]);
+
+  const mouseMovedWithLink = useCallback(
+    (ev: MouseEvent) => {
+      if (!movingLinkId) {
+        return;
+      }
+      setLinks((links) => {
+        return links.map((link) => {
+          if (link.id === movingLinkId) {
+            link.toPosition = { x: ev.clientX, y: ev.clientY };
+          }
+          return link;
+        });
+      });
+    },
+    [movingLinkId]
+  );
+
+  useEffect(() => {
+    const mouseUpWithLink = () => {
+      setMovingLinkId(undefined);
+    };
+    document.addEventListener("mouseup", mouseUpWithLink);
+    return () => {
+      document.removeEventListener("mouseup", mouseUpWithLink);
+    };
+  }, [movingLinkId]);
+
+  useEffect(() => {
+    document.addEventListener("mousemove", mouseMovedWithLink);
+    return () => {
+      document.removeEventListener("mousemove", mouseMovedWithLink);
+    };
+  }, [mouseMovedWithLink]);
 
   const doubleClickOnCanvas = (ev: React.MouseEvent<HTMLElement>) => {
     addItem({ x: ev.clientX, y: ev.clientY });
@@ -35,7 +70,7 @@ export default function Map() {
     setNodes(newItems);
   };
 
-  const clickOnNodeArrow = (
+  const mouseDownOnArrow = (
     ev: React.MouseEvent<HTMLButtonElement>,
     node: INode
   ) => {
@@ -44,7 +79,10 @@ export default function Map() {
       id: crypto.randomUUID(),
       fromNodeId: node.id,
       fromPosition: position,
+      toPosition: position,
     };
+    setMovingLinkId(link.id);
+    setLinks([...links, link]);
   };
 
   const itemsUi = nodes.map((node) => (
@@ -52,13 +90,23 @@ export default function Map() {
       key={node.id}
       node={node}
       setEditing={(value: boolean) => setEditing(node.id, value)}
-      onClickOnArrow={clickOnNodeArrow}
+      onMouseDownOnArrow={mouseDownOnArrow}
     ></Item>
+  ));
+
+  const linksUi = links.map((link) => (
+    <path
+      key={link.id}
+      d={`M ${link.fromPosition.x} ${link.fromPosition.y} L ${link.toPosition.x} ${link.toPosition.y}`}
+      stroke="black"
+      fill="transparent"
+    ></path>
   ));
 
   return (
     <div className={styles.mapContainer}>
       <div onDoubleClick={doubleClickOnCanvas} className={styles.canvas}>
+        <svg className={styles.svgLinks}>{linksUi}</svg>
         {itemsUi}
       </div>
       <div className={styles.commandBarContainer}>
